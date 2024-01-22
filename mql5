@@ -1,0 +1,77 @@
+
+// Program Name: SMT Divergence MT5
+// Developer's Site: forexroboteasy.com
+// Development Name: Forex Robot Easy Team
+
+// Include necessary libraries
+#include <Trade\Trade.mqh>
+#include <Indicators\Oscillators\SMT.mqh>
+
+// Define global variables
+CTrade trade; // Trade object
+SMT smt; // SMT Divergence object
+
+// Initialize function
+int OnInit()
+{
+    // Initialize trade object
+    trade.SetExpertName('SMT Divergence MT5');
+    
+    // Initialize SMT Divergence object
+    smt.Create();
+    smt.SetCustomSettings(); // Customizable settings
+    
+    return(INIT_SUCCEEDED);
+}
+
+// Deinitialize function
+void OnDeinit(const int reason)
+{
+    // Clean up resources
+    smt.Destroy();
+}
+
+// Start function
+void OnStart()
+{
+    // Real-time market analysis
+    double trend = smt.GetTrend(); // Get current trend
+    bool divergence = smt.CheckDivergence(); // Check for divergences
+    
+    // Trade based on analysis
+    if (trend == SMT_TREND_UP && divergence)
+    {
+        trade.Buy(0.1, Symbol(), 0, 0, 0, 0);
+    }
+    else if (trend == SMT_TREND_DOWN && divergence)
+    {
+        trade.Sell(0.1, Symbol(), 0, 0, 0, 0);
+    }
+    
+    // Add further trading logic as required
+    
+    // Output analysis results
+    Print('Current Trend: ', trend);
+    Print('Divergence Detected: ', divergence);
+}
+
+// Error handling and exception management
+void OnTradeError(const string function_name, const int error_code, const string error_description)
+{
+    Print('Trade Error in ', function_name, ': ', error_description);
+}
+
+void OnChartEvent(const int id, const long& lparam, const double& dparam, const string& sparam)
+{
+    // Handle chart events if required
+}
+
+// Program termination
+void OnTick()
+{
+    // End program after a certain condition is met
+    if (smt.CheckTerminationCondition())
+    {
+        ExpertRemove();
+    }
+}
